@@ -1,0 +1,10 @@
+{
+  "flightId": 1,
+  "passengerName": "Test User",
+  "passengerEmail": "test@example.com",
+  "passengerPhone": "+905551234567",
+  "seatNumber": "A1",
+  "class": "Economy",
+  "totalPrice": 200,
+  "currency": "TRY"
+}

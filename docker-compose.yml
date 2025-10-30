@@ -1,0 +1,56 @@
+# Docker Compose version removed (obsolete)
+
+services:
+  # 🎯 Backend API
+  api:
+    build:
+      context: .
+      dockerfile: FlightInfo.Api/Dockerfile
+    ports:
+      - "7103:7103"
+      - "7104:7104"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7104
+      - ConnectionStrings__DefaultConnection=Server=db;Database=FlightInfoDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true;
+    depends_on:
+      - db
+    networks:
+      - flightinfo-network
+
+  # 🎯 Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: FlightInfo.Frontend/Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://api:7104/api
+      - VITE_API_BASE_URL=http://api:7104/api
+      - VITE_DEV_MODE=true
+    depends_on:
+      - api
+    networks:
+      - flightinfo-network
+
+  # 🎯 Database
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql
+    networks:
+      - flightinfo-network
+
+volumes:
+  db_data:
+
+networks:
+  flightinfo-network:
+    driver: bridge
