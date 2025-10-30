@@ -1,0 +1,15 @@
+* text=auto
+
+# Keep PowerShell scripts with CRLF on Windows checkouts
+*.ps1 eol=crlf
+
+# Ensure shell scripts remain LF
+*.sh eol=lf
+
+# Normalize TypeScript/JS/TSX/JSX to LF in repo
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+
+
