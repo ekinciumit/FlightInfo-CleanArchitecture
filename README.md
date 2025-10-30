@@ -1,81 +1,99 @@
-# 🚀 FlightInfo - Clean Architecture Monorepo
+🚀 FlightInfo – Clean Architecture Monorepo
+==========================================
 
-Modern, scalable flight information system built with Clean Architecture principles.
+Modern, production‑ready flight search and reservation system built with Clean Architecture. Clean separation of concerns, testable core, and a smooth DX across API and React frontend.
 
-## 📁 Project Structure
+![Architecture](https://img.shields.io/badge/Architecture-Clean-blueviolet?style=for-the-badge) ![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge) ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite-7-646CFF?style=for-the-badge&logo=vite&logoColor=white) ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+
+Table of Contents
+-----------------
+- Overview
+- Features
+- Tech Stack
+- Project Structure
+- Quick Start
+- Configuration & Secrets
+- Development
+- Docker (optional)
+- Database & Migrations
+- API Docs
+- Testing
+- Scripts
+- Troubleshooting
+- Contributing
+- License
+
+
+Overview
+--------
+FlightInfo demonstrates a real‑world, layered architecture for flight discovery, pricing and booking. The domain core stays pure; application logic orchestrates use cases; infrastructure integrates with EF Core, email/SMS; the API exposes endpoints secured via JWT + 2FA; the React app provides a responsive UI.
+
+
+Features
+--------
+- Flight search, sorting/filtering, price options
+- Reservation create/cancel/restore
+- JWT authentication with optional 2FA (email/SMS)
+- Admin panel for flights, prices and logs
+- Robust validation, mapping and logging
+
+
+Tech Stack
+----------
+- Backend: .NET 9, ASP.NET Core, Entity Framework Core, FluentValidation, AutoMapper, JWT
+- Frontend: React 19, Vite 7, TypeScript 5, Axios, React Router
+- Tooling: Docker, PowerShell scripts, xUnit
+
+
+Project Structure
+-----------------
 
 ```
 FlightInfo-CleanArchitecture/
-├── 🎯 FlightInfo.Domain/          # Core Business Entities
-├── 🎯 FlightInfo.Application/     # Business Logic & Services
-├── 🎯 FlightInfo.Infrastructure/  # Data Access & External Services
-├── 🎯 FlightInfo.Api/            # Web API Controllers
-├── 🎯 FlightInfo.Shared/          # DTOs & Common Types
-├── 🎯 FlightInfo.Frontend/        # React Frontend
-├── 🎯 scripts/                    # Development Scripts
-└── 🎯 docker-compose.yml         # Docker Configuration
+├── FlightInfo.Domain/         # Core business entities, value objects, domain events
+├── FlightInfo.Application/    # Use cases, DTO contracts, validators, service interfaces
+├── FlightInfo.Infrastructure/ # EF Core, repositories, email/SMS/cache, persistence
+├── FlightInfo.Api/            # ASP.NET Core Web API, JWT, middleware, DI
+├── FlightInfo.Shared/         # Shared DTOs, enums, constants
+├── FlightInfo.Frontend/       # React + Vite (TypeScript) app
+├── scripts/                   # Dev and build helpers
+└── docker-compose.yml         # Optional infra stack
 ```
 
-## 🚀 Quick Start
+High‑Level Architecture
+-----------------------
 
-### Prerequisites
-- .NET 9.0 SDK
-- Node.js 18+
-- Docker Desktop
-- SQL Server (or Docker)
+```
+┌──────────────┐     ┌───────────────────────┐     ┌────────────────────┐
+│   Frontend   │ →→  │        API            │ →→  │   Infrastructure   │
+│ (React/Vite) │     │ (ASP.NET Core, JWT)   │     │ (EF, Email, SMS)   │
+└──────┬───────┘     └──────────┬────────────┘     └──────────┬─────────┘
+       │                         │                             │
+       │                  ┌──────▼──────┐                      │
+       │                  │ Application │  orchestrates use     │
+       │                  │  (UseCases) │  cases + validation   │
+       │                  └──────┬──────┘                      │
+       │                         │                             │
+       │                  ┌──────▼──────┐                      │
+       └─────────────────▶│   Domain    │◀─────────────────────┘
+                          │ (Entities)  │  pure business core
+                          └─────────────┘
+```
 
-### Development Setup
 
-FlightInfo – Clean Architecture
-================================
+Quick Start
+-----------
 
-Modern, çok katmanlı bir uçuş arama ve rezervasyon uygulaması.
+Prerequisites: .NET 9 SDK, Node.js 20+, npm, SQL Server (LocalDB or Docker)
 
-İçindekiler
-------------
-- Mimari Genel Bakış
-- Özellikler
-- Teknolojiler
-- Hızlı Başlangıç (Backend + Frontend)
-- Gizli Bilgilerin Yönetimi (User Secrets / .env.local)
-- Komutlar ve Script’ler
-- Docker ile Çalıştırma (opsiyonel)
-- Testler
-- Sorun Giderme
-
-Mimari Genel Bakış
-------------------
-- Clean Architecture katmanları:
-  - FlightInfo.Domain: Varlıklar, değer nesneleri, domain kuralları
-  - FlightInfo.Application: Use-case servisleri, kontratlar, validasyon
-  - FlightInfo.Infrastructure: EF Core, repository’ler, harici servisler
-  - FlightInfo.Api: ASP.NET Core Web API (JWT auth, middleware)
-  - FlightInfo.Frontend: React + Vite (TypeScript)
-
-Özellikler
-----------
-- Uçuş arama ve listeleme
-- Fiyat seçenekleri ve rezervasyon akışı
-- JWT tabanlı kimlik doğrulama, 2FA (email/SMS)
-- Admin arayüzü (uçuş/fiyat yönetimi, loglar)
-
-Teknolojiler
-------------
-- Backend: .NET 9, EF Core, FluentValidation, AutoMapper
-- Frontend: React 19, Vite 7, TypeScript 5
-- Diğer: Twilio (SMS), SMTP (email), Docker (opsiyonel)
-
-Hızlı Başlangıç
----------------
-Önkoşullar: .NET 9 SDK, Node 20+, npm, SQL Server (LocalDB ya da Docker)
-
-1) Depoyu klonla
+1) Clone
 ```
 git clone https://github.com/ekinciumit/FlightInfo-CleanArchitecture.git
 cd FlightInfo-CleanArchitecture
 ```
 
-2) Backend gizli değerleri ayarla (User Secrets)
+2) Backend secrets (User Secrets)
 ```
 cd FlightInfo.Api
 dotnet user-secrets init
@@ -94,195 +112,122 @@ dotnet user-secrets set "Twilio:AuthToken" "xxx"
 dotnet user-secrets set "Twilio:FromNumber" "+90xxxxxxxxxx"
 ```
 
-3) Frontend ortam değişkeni
+3) Frontend environment
 ```
 cd ../FlightInfo.Frontend
 echo VITE_API_BASE_URL=http://localhost:7104/api > .env.local
 npm ci
 ```
 
-4) Çalıştır
+4) Run
 ```
-# Backend
+# Backend (HTTPS profile recommended)
 cd ../FlightInfo.Api
 dotnet run --launch-profile https
 
-# Frontend (ayrı terminal)
+# Frontend (separate terminal)
 cd ../FlightInfo.Frontend
 npm run dev
 ```
-- API: http://localhost:7104 (https: 7032)
-- Frontend: terminalde yazan Vite adresi (genelde http://localhost:5173)
 
-Gizli Bilgilerin Yönetimi
--------------------------
-- appsettings.Development.json dosyasında yalnızca placeholder’lar bulunur.
-- Gerçek değerler dotnet user-secrets ve Frontend için .env.local dosyasında tutulur (repo’ya girmez).
+- API: [`http://localhost:7104`](http://localhost:7104) (HTTPS: `https://localhost:7032`)
+- Frontend (Vite): typically [`http://localhost:5173`](http://localhost:5173)
 
-Komutlar ve Script’ler
-----------------------
-- Backend build+test: `dotnet build`, `dotnet test`
-- Frontend prod build: `npm run build`
-- Kolaylaştırıcı script’ler: `scripts/build.ps1`, `scripts/dev.ps1`, `scripts/fix_project.ps1`
 
-Docker (opsiyonel)
-------------------
-- SQL Server veya diğer servisleri kolay başlatmak için `docker-compose.yml` kullanabilirsiniz (ihtiyaca göre düzenleyin).
+Configuration & Secrets
+-----------------------
+- `appsettings.Development.json` contains placeholders only.
+- Real values are stored via .NET User Secrets (backend) and `.env.local` (frontend). These are not committed.
+- For production, prefer environment variables or a secret manager (e.g., Azure Key Vault).
 
-Testler
-------
-- Backend testleri: `dotnet test`
-- Test sonuçları ve coverage çıktıları `.gitignore` kapsamındadır.
 
-Sorun Giderme
--------------
-- Windows’ta Vite/esbuild kilidi: Tüm Node süreçlerini kapatın (`taskkill /IM node.exe /F`) ve `npm ci` tekrar deneyin. Gerekirse .env.local’i yeniden oluşturun.
-- SQL bağlantısı: `ConnectionStrings:DefaultConnection` değerini user-secrets üzerinden kontrol edin (`dotnet user-secrets list`).
-
-   ```bash
-   git clone <repository>
-   cd FlightInfo-CleanArchitecture
-   ```
-
-2. **Start Development Environment**
-   ```powershell
-   .\scripts\dev.ps1
-   ```
-
-3. **Access Applications**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:7104
-   - Swagger: http://localhost:7104/swagger
-   - Database: localhost:1433
-
-### Manual Setup
-
-1. **Backend**
-   ```bash
-   cd FlightInfo.Api
-   dotnet run
-   ```
-
-2. **Frontend**
-   ```bash
-   cd FlightInfo.Frontend
-   npm install
-   npm run dev
-   ```
-
-## 🏗️ Architecture
-
-### Clean Architecture Layers
-
-- **Domain**: Core business entities and rules
-- **Application**: Business logic and use cases
-- **Infrastructure**: Data access and external services
-- **API**: Web controllers and endpoints
-- **Shared**: Common DTOs and types
-
-### Technology Stack
-
-**Backend:**
-- .NET 9.0
-- ASP.NET Core Web API
-- Entity Framework Core
-- SQL Server
-- JWT Authentication
-- FluentValidation
-- Swagger/OpenAPI
-
-**Frontend:**
-- React 19
-- TypeScript
-- Vite
-- Axios
-- React Router
-
-## 🐳 Docker
-
-```bash
-# Start all services
-docker-compose up -d
-
-# Stop all services
-docker-compose down
-
-# View logs
-docker-compose logs -f
+Development
+-----------
+- Build and test backend:
+```
+dotnet build
+dotnet test
 ```
 
-## 📝 Scripts
-
-- `.\scripts\dev.ps1` - Start development environment
-- `.\scripts\build.ps1` - Build all projects
-- `.\scripts\test.ps1` - Run all tests
-
-## 🔧 Development
-
-### Backend Development
-```bash
-cd FlightInfo.Api
-dotnet run
+- Frontend production build:
 ```
-
-### Frontend Development
-```bash
 cd FlightInfo.Frontend
-npm run dev
+npm run build
 ```
 
-### Database Migrations
-```bash
+- Helpful scripts (PowerShell):
+  - `scripts/dev.ps1` start dev environment
+  - `scripts/build.ps1` build all projects
+  - `scripts/fix_project.ps1` fix common local issues
+
+
+Docker (optional)
+-----------------
+Use Docker to spin up infra quickly (e.g., SQL Server):
+
+```
+docker-compose up -d
+docker-compose logs -f
+docker-compose down
+```
+
+
+Database & Migrations
+---------------------
+Run EF Core migrations from `FlightInfo.Api` if/when needed:
+
+```
 cd FlightInfo.Api
 dotnet ef migrations add <MigrationName>
 dotnet ef database update
 ```
 
-## 📊 API Documentation
 
-Swagger documentation available at: http://localhost:7104/swagger
+API Docs
+--------
+Swagger UI is available at: [`http://localhost:7104/swagger`](http://localhost:7104/swagger)
 
-## 🧪 Testing
 
-```bash
-# Run all tests
+Testing
+-------
+Run all tests:
+```
 dotnet test
+```
 
-# Run specific test project
+Run a specific test project:
+```
 dotnet test FlightInfo.Tests
 ```
 
-## 🚀 Deployment
 
-### Production Build
-```bash
-.\scripts\build.ps1
-```
+Scripts
+-------
+- `scripts/dev.ps1` – Start development environment
+- `scripts/build.ps1` – Build all projects
+- `scripts/test.ps1` – Run all tests
 
-### Docker Production
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
 
-## 📋 Features
+Troubleshooting
+---------------
+- Vite/esbuild lock on Windows:
+  - Kill all Node processes: `taskkill /IM node.exe /F`
+  - Reinstall deps: `npm ci` then `npm run dev` or `npm run build`
+- SQL connection: verify with `dotnet user-secrets list` in `FlightInfo.Api`.
+- Ports already in use: stop previous instances or change ports in launch settings.
 
-- ✅ User Authentication & Authorization
-- ✅ Flight Search & Booking
-- ✅ Reservation Management
-- ✅ Clean Architecture
-- ✅ Docker Support
-- ✅ API Documentation
-- ✅ Responsive UI
 
-## 🤝 Contributing
-
+Contributing
+------------
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Run tests
-5. Submit a pull request
+5. Open a pull request
 
-## 📄 License
 
+License
+-------
 This project is licensed under the MIT License.
+
 
