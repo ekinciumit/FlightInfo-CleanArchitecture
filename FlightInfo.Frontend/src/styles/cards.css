@@ -1,0 +1,116 @@
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 15px 15px 0 0;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+}
+
+
+.card-primary::before {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.card-success::before {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+}
+
+.card-warning::before {
+    background: linear-gradient(90deg, #f39c12, #e67e22);
+}
+
+.card-danger::before {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+.card-info::before {
+    background: linear-gradient(90deg, #3498db, #2980b9);
+}
+
+
+.card-header {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+}
+
+.card-subtitle {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+
+.card-body {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+
+.card-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 0 0 15px 15px;
+}
+
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.card-actions .btn {
+    flex: 1;
+    min-width: 100px;
+}
+
+
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-header,
+    .card-body,
+    .card-footer {
+        padding: 1rem;
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+    
+    .card-actions .btn {
+        flex: none;
+        width: 100%;
+    }
+}
