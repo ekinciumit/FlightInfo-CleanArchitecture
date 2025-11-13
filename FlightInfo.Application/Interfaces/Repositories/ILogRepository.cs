@@ -37,6 +37,12 @@ namespace FlightInfo.Application.Interfaces.Repositories
         /// <param name="endDate">End date</param>
         /// <returns>List of logs</returns>
         Task<IEnumerable<Log>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
+
+        /// <summary>
+        /// Deletes all logs from the database
+        /// </summary>
+        /// <returns>Number of deleted logs</returns>
+        Task<int> ClearAllAsync();
     }
 }
 

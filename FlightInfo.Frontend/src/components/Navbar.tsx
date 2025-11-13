@@ -36,8 +36,12 @@ function Navbar() {
             <div className="nav-container">
                 <div className="nav-left">
                     <Link to="/" className="nav-logo">
-                        <span className="logo-icon">✈️</span>
-                        <span className="logo-text">FlightInfo</span>
+                        <img 
+                            src="/images/airplane.png.png" 
+                            alt="Airplane" 
+                            className="logo-icon"
+                        />
+                        <span className="logo-text">Skyora</span>
                     </Link>
                     {isLoggedIn && (
                         <span className="nav-user">

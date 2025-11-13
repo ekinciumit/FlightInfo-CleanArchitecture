@@ -11,6 +11,7 @@ namespace FlightInfo.Application.Interfaces.Services
         Task<IEnumerable<LogDto>> GetLogsAsync();
         Task<LogDto> CreateLogAsync(CreateLogRequest request);
         Task<bool> DeleteLogAsync(int id);
+        Task<int> ClearAllLogsAsync();
 
         // Kullanıcı aktivite logları
         Task LogUserLoginAsync(int userId, string email, string ipAddress);

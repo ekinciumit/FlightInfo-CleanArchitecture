@@ -166,8 +166,20 @@ function AdminFlightsPage() {
                     bValue = new Date(b.departureTime).getTime();
                     break;
                 case "status":
-                    aValue = a.status;
-                    bValue = b.status;
+                    // Durum önceliğine göre sıralama (mantıklı sıralama)
+                    const statusPriority: { [key: string]: number } = {
+                        "scheduled": 1,    // Planlandı - En önemli
+                        "boarding": 2,      // Biniş
+                        "departed": 3,      // Kalktı
+                        "arrived": 4,       // Vardı
+                        "cancelled": 5      // İptal
+                    };
+                    const getStatusPriority = (status: string | null | undefined): number => {
+                        if (!status) return 99; // Bilinmiyor en sona
+                        return statusPriority[status.toLowerCase()] || 99;
+                    };
+                    aValue = getStatusPriority(a.status);
+                    bValue = getStatusPriority(b.status);
                     break;
                 default:
                     aValue = new Date(a.departureTime).getTime();
@@ -184,38 +196,38 @@ function AdminFlightsPage() {
         setFilteredFlights(filtered);
     };
 
-    const getStatusColor = (status: string) => {
+    const getStatusText = (status: string | null | undefined) => {
+        if (!status) return "Bilinmiyor";
         switch (status.toLowerCase()) {
             case "scheduled":
-                return "#3498db";
+                return "Planlandı";
             case "boarding":
-                return "#f39c12";
+                return "Biniş";
             case "departed":
-                return "#e74c3c";
+                return "Kalktı";
             case "arrived":
-                return "#27ae60";
+                return "Vardı";
             case "cancelled":
-                return "#95a5a6";
+                return "İptal";
             default:
-                return "#2c3e50";
+                return status;
         }
     };
 
-    const getStatusIcon = (status: string) => {
-        switch (status.toLowerCase()) {
-            case "scheduled":
-                return "📅";
-            case "boarding":
-                return "🚶";
-            case "departed":
-                return "✈️";
-            case "arrived":
-                return "✅";
-            case "cancelled":
-                return "❌";
-            default:
-                return "❓";
-        }
+    // Uçuşun rezervasyon yapılabilir olup olmadığını kontrol et
+    const isFlightBookable = (flight: Flight) => {
+        const departureDate = new Date(flight.departureTime);
+        const now = new Date();
+        return flight.status?.toLowerCase() === "scheduled" && departureDate > now;
+    };
+
+    // Uçuşun geçmişte kaldığını kontrol et
+    const isFlightPast = (flight: Flight) => {
+        const departureDate = new Date(flight.departureTime);
+        const now = new Date();
+        return departureDate < now || 
+               flight.status?.toLowerCase() === "arrived" || 
+               flight.status?.toLowerCase() === "departed";
     };
 
     const formatDate = (dateString: string) => {
@@ -537,12 +549,21 @@ function AdminFlightsPage() {
             <div className="container">
                 {/* Header */}
                 <div className="flights-header">
-                    <div className="header-left">
-                        <Link to="/admin" className="back-button">
-                            ← Admin Paneli
-                        </Link>
-                        <h1>✈️ Uçuş Yönetimi</h1>
-                        <p>Toplam {filteredFlights.length} uçuş</p>
+                    <Link to="/admin" className="back-button">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span>Admin Paneli</span>
+                    </Link>
+                    <div className="header-main">
+                        <div className="header-icon">✈️</div>
+                        <div className="header-text-content">
+                            <h1>Uçuş Yönetimi</h1>
+                            <div className="flight-count-badge">
+                                <span className="count-number">{filteredFlights.length}</span>
+                                <span className="count-label">uçuş</span>
+                            </div>
+                        </div>
                     </div>
                     <div className="header-actions">
                         <button
@@ -551,8 +572,13 @@ function AdminFlightsPage() {
                         >
                             ➕ Yeni Uçuş
                         </button>
-                        <button onClick={loadFlights} className="btn btn-secondary">
-                            🔄 Yenile
+                        <button onClick={loadFlights} className="refresh-button">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 4V10H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M23 20V14H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            <span>Yenile</span>
                         </button>
                     </div>
                 </div>
@@ -628,7 +654,10 @@ function AdminFlightsPage() {
                             </thead>
                             <tbody>
                                 {filteredFlights.map(flight => (
-                                    <tr key={flight.id} className="flight-row">
+                                    <tr 
+                                        key={flight.id} 
+                                        className={`flight-row ${isFlightPast(flight) ? 'flight-past' : ''} ${isFlightBookable(flight) ? 'flight-bookable' : ''}`}
+                                    >
                                         <td className="flight-number">
                                             <strong>{flight.flightNumber}</strong>
                                         </td>
@@ -640,12 +669,7 @@ function AdminFlightsPage() {
                                             <strong>{flight.origin}</strong> → <strong>{flight.destination}</strong>
                                         </td>
                                         <td className="status">
-                                            <span
-                                                className="status-badge"
-                                                style={{ backgroundColor: getStatusColor(flight.status) }}
-                                            >
-                                                {getStatusIcon(flight.status)} {flight.status}
-                                            </span>
+                                            {getStatusText(flight.status)}
                                         </td>
                                         <td className="aircraft">
                                             {flight.aircraftType || 'Bilinmiyor'}
@@ -844,12 +868,6 @@ function AdminFlightsPage() {
                                     <div className="detail-header">
                                         <h3>{selectedFlight.flightNumber}</h3>
                                         <p>{selectedFlight.origin} → {selectedFlight.destination}</p>
-                                        <span
-                                            className="status-badge"
-                                            style={{ backgroundColor: getStatusColor(selectedFlight.status) }}
-                                        >
-                                            {getStatusIcon(selectedFlight.status)} {selectedFlight.status}
-                                        </span>
                                     </div>
 
                                     <div className="detail-sections">

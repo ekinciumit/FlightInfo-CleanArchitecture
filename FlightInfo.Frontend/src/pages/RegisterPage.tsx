@@ -36,10 +36,6 @@ function RegisterPage() {
         <div className="auth-container">
             <div className="auth-card">
                 <div className="auth-header">
-                    <div className="auth-logo">
-                        <span className="logo-icon">✈️</span>
-                        <span className="logo-text">FlightInfo</span>
-                    </div>
                     <h2>Kayıt Ol</h2>
                     <p>Yeni hesap oluşturun</p>
                 </div>

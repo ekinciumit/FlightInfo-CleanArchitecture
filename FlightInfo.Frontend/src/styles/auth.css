@@ -4,7 +4,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%);
     padding: 20px;
     position: relative;
     overflow: hidden;
@@ -55,16 +55,16 @@
 
 .logo-icon {
     font-size: 2.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-.logo-text {
+.auth-card .logo-text {
     font-size: 1.8rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -112,9 +112,9 @@
 
 .form-group input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #6eafff;
     background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(110, 175, 255, 0.1);
 }
 
 .form-group input::placeholder {
@@ -122,7 +122,7 @@
 }
 
 .auth-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%);
     color: white;
     border: none;
     padding: 18px;
@@ -136,8 +136,8 @@
 
 .auth-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    box-shadow: 0 10px 30px rgba(110, 175, 255, 0.3);
+    background: linear-gradient(135deg, #6eafff 0%, #1453c9 100%);
 }
 
 .auth-button:active {
@@ -180,14 +180,14 @@
 }
 
 .auth-link {
-    color: #667eea;
+    color: #6eafff;
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .auth-link:hover {
-    color: #5a6fd8;
+    color: #6eafff;
     text-decoration: underline;
 }
 
@@ -206,7 +206,7 @@
         font-size: 1.8rem;
     }
     
-    .logo-text {
+    .auth-card .logo-text {
         font-size: 1.5rem;
     }
     

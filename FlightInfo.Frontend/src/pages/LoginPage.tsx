@@ -19,7 +19,7 @@ function LoginPage() {
         setError("");
 
         try {
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch('http://localhost:7104/api/Auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -51,12 +51,28 @@ function LoginPage() {
                     navigate("/bookings");
                 }
             } else {
-                (window as any).showToast.error("Giriş Hatası", data.message || "Email veya şifre hatalı!");
-                setError(data.message || "Email veya şifre hatalı!");
+                const errorMessage = data.message || data.Message || "Email veya şifre hatalı!";
+                
+                // Erişim engellendi mesajı için sadece form içi mesaj göster, toast gösterme
+                if (errorMessage.includes("Erişiminiz engellendi") || errorMessage.includes("devre dışı")) {
+                    // Toast gösterme, sadece form içi mesaj
+                } else {
+                    (window as any).showToast.error("Giriş Hatası", errorMessage);
+                }
+                
+                setError(errorMessage);
             }
-        } catch (error) {
-            (window as any).showToast.error("Giriş Hatası", "Bir hata oluştu!");
-            setError("Bir hata oluştu!");
+        } catch (error: any) {
+            console.error("Login error:", error);
+            let errorMessage = "Bir hata oluştu!";
+            
+            // Network error veya parse error durumunda
+            if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            (window as any).showToast.error("Giriş Hatası", errorMessage);
+            setError(errorMessage);
         }
     };
 
@@ -88,10 +104,6 @@ function LoginPage() {
         <div className="auth-container">
             <div className="auth-card">
                 <div className="auth-header">
-                    <div className="auth-logo">
-                        <span className="logo-icon">✈️</span>
-                        <span className="logo-text">FlightInfo</span>
-                    </div>
                     <h2>Giriş Yap</h2>
                     <p>Hesabınıza giriş yapın</p>
                 </div>
@@ -124,7 +136,11 @@ function LoginPage() {
                     </button>
                 </form>
 
-                {error && <div className="error-message">{error}</div>}
+                {error && (
+                    <div className={`error-message ${error.includes("Erişiminiz engellendi") || error.includes("devre dışı") ? "blocked" : ""}`}>
+                        {error}
+                    </div>
+                )}
 
                 <div className="auth-footer">
                     <p>

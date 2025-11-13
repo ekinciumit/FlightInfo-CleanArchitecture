@@ -22,9 +22,14 @@ function AdminUsersPage() {
     const [roleFilter, setRoleFilter] = useState("all");
     const [statusFilter, setStatusFilter] = useState("all");
     const [sortBy, setSortBy] = useState("createdAt");
-    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [showUserModal, setShowUserModal] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        fullName: "",
+        role: "",
+        phone: ""
+    });
 
     useEffect(() => {
         loadUsers();
@@ -32,7 +37,7 @@ function AdminUsersPage() {
 
     useEffect(() => {
         filterAndSortUsers();
-    }, [users, searchTerm, roleFilter, statusFilter, sortBy, sortOrder]);
+    }, [users, searchTerm, roleFilter, statusFilter, sortBy]);
 
     const loadUsers = async () => {
         try {
@@ -87,37 +92,57 @@ function AdminUsersPage() {
         // Sıralama
         filtered.sort((a, b) => {
             let aValue: any, bValue: any;
+            let isAscending: boolean = true; // Varsayılan sıralama yönü
 
             switch (sortBy) {
                 case "fullName":
-                    aValue = a.fullName;
-                    bValue = b.fullName;
+                    // Ad Soyad: Alfabetik artan sıralama (A-Z)
+                    aValue = (a.fullName || "").toLowerCase();
+                    bValue = (b.fullName || "").toLowerCase();
+                    isAscending = true;
                     break;
                 case "email":
-                    aValue = a.email;
-                    bValue = b.email;
+                    // Email: Alfabetik artan sıralama (A-Z)
+                    aValue = (a.email || "").toLowerCase();
+                    bValue = (b.email || "").toLowerCase();
+                    isAscending = true;
                     break;
                 case "role":
-                    aValue = a.role;
-                    bValue = b.role;
+                    // Rol: Alfabetik artan sıralama (A-Z)
+                    aValue = (a.role || "").toLowerCase();
+                    bValue = (b.role || "").toLowerCase();
+                    isAscending = true;
                     break;
                 case "createdAt":
-                    aValue = new Date(a.createdAt);
-                    bValue = new Date(b.createdAt);
+                    // Kayıt Tarihi: Azalan sıralama (en yeni önce)
+                    aValue = new Date(a.createdAt).getTime();
+                    bValue = new Date(b.createdAt).getTime();
+                    isAscending = false;
                     break;
                 case "lastLoginAt":
-                    aValue = new Date(a.lastLoginAt || 0);
-                    bValue = new Date(b.lastLoginAt || 0);
+                    // Son Giriş: Azalan sıralama (en yeni önce)
+                    aValue = new Date(a.lastLoginAt || 0).getTime();
+                    bValue = new Date(b.lastLoginAt || 0).getTime();
+                    isAscending = false;
                     break;
                 default:
-                    aValue = new Date(a.createdAt);
-                    bValue = new Date(b.createdAt);
+                    // Varsayılan: Kayıt Tarihi azalan
+                    aValue = new Date(a.createdAt).getTime();
+                    bValue = new Date(b.createdAt).getTime();
+                    isAscending = false;
             }
 
-            if (sortOrder === "asc") {
-                return aValue > bValue ? 1 : -1;
+            // Sıralama uygula
+            if (isAscending) {
+                // Artan sıralama (A-Z, küçükten büyüğe)
+                if (aValue < bValue) return -1;
+                if (aValue > bValue) return 1;
+                return 0;
             } else {
-                return aValue < bValue ? 1 : -1;
+                // Azalan sıralama (Z-A, büyükten küçüğe)
+                if (aValue > bValue) return -1;
+                if (aValue < bValue) return 1;
+                return 0;
             }
         });
 
@@ -158,7 +183,66 @@ function AdminUsersPage() {
 
     const handleUserClick = (user: User) => {
         setSelectedUser(user);
+        setEditFormData({
+            fullName: user.fullName,
+            role: user.role,
+            phone: user.phone || ""
+        });
+        setIsEditing(false);
         setShowUserModal(true);
+    };
+
+    const handleEditClick = () => {
+        setIsEditing(true);
+    };
+
+    const handleCancelEdit = () => {
+        if (selectedUser) {
+            setEditFormData({
+                fullName: selectedUser.fullName,
+                role: selectedUser.role,
+                phone: selectedUser.phone || ""
+            });
+        }
+        setIsEditing(false);
+    };
+
+    const handleSaveEdit = async () => {
+        if (!selectedUser) return;
+
+        try {
+            const response = await fetch(`http://localhost:7104/api/User/${selectedUser.id}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: selectedUser.id,
+                    fullName: editFormData.fullName,
+                    role: editFormData.role,
+                    phone: editFormData.phone || null
+                })
+            });
+
+            if (response.ok) {
+                const updatedUser = await response.json();
+                setUsers(prev => prev.map(user =>
+                    user.id === selectedUser.id
+                        ? { ...user, ...updatedUser }
+                        : user
+                ));
+                setSelectedUser({ ...selectedUser, ...updatedUser });
+                setIsEditing(false);
+                alert("Kullanıcı bilgileri başarıyla güncellendi");
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Kullanıcı güncellenirken hata oluştu");
+            }
+        } catch (error: any) {
+            console.error("Kullanıcı güncelleme hatası:", error);
+            alert("Hata: " + error.message);
+        }
     };
 
     const toggleUserStatus = async (userId: number, currentStatus: boolean) => {
@@ -247,18 +331,30 @@ function AdminUsersPage() {
             <div className="container">
                 {/* Header */}
                 <div className="users-header">
-                    <div className="header-left">
-                        <Link to="/admin" className="back-button">
-                            ← Admin Paneli
-                        </Link>
-                        <h1>👥 Kullanıcı Yönetimi</h1>
-                        <p>Toplam {filteredUsers.length} kullanıcı</p>
+                    <Link to="/admin" className="back-button">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span>Admin Paneli</span>
+                    </Link>
+                    <div className="header-main">
+                        <div className="header-icon">👥</div>
+                        <div className="header-text-content">
+                            <h1>Kullanıcı Yönetimi</h1>
+                            <div className="user-count-badge">
+                                <span className="count-number">{filteredUsers.length}</span>
+                                <span className="count-label">kullanıcı</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="header-actions">
-                        <button onClick={loadUsers} className="btn btn-secondary">
-                            🔄 Yenile
-                        </button>
-                    </div>
+                    <button onClick={loadUsers} className="refresh-button">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 4V10H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M23 20V14H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span>Yenile</span>
+                    </button>
                 </div>
 
                 {/* Filters */}
@@ -309,17 +405,6 @@ function AdminUsersPage() {
                             <option value="email">Email</option>
                             <option value="role">Rol</option>
                             <option value="lastLoginAt">Son Giriş</option>
-                        </select>
-                    </div>
-                    <div className="filter-group">
-                        <label>Sıra:</label>
-                        <select
-                            value={sortOrder}
-                            onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-                            className="filter-select"
-                        >
-                            <option value="desc">Azalan</option>
-                            <option value="asc">Artan</option>
                         </select>
                     </div>
                 </div>
@@ -448,27 +533,56 @@ function AdminUsersPage() {
                                                 </div>
                                                 <div className="detail-item">
                                                     <span className="label">Ad Soyad:</span>
-                                                    <span className="value">{selectedUser.fullName}</span>
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editFormData.fullName}
+                                                            onChange={(e) => setEditFormData({ ...editFormData, fullName: e.target.value })}
+                                                            className="edit-input"
+                                                        />
+                                                    ) : (
+                                                        <span className="value">{selectedUser.fullName}</span>
+                                                    )}
                                                 </div>
                                                 <div className="detail-item">
                                                     <span className="label">Email:</span>
-                                                    <span className="value">{selectedUser.email}</span>
+                                                    <span className="value">{selectedUser.email} <span style={{ fontSize: "0.8rem", color: "#999" }}>(Değiştirilemez)</span></span>
                                                 </div>
                                                 <div className="detail-item">
                                                     <span className="label">Rol:</span>
-                                                    <span
-                                                        className="role-badge"
-                                                        style={{ backgroundColor: getRoleColor(selectedUser.role) }}
-                                                    >
-                                                        {getRoleIcon(selectedUser.role)} {selectedUser.role}
-                                                    </span>
+                                                    {isEditing ? (
+                                                        <select
+                                                            value={editFormData.role}
+                                                            onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
+                                                            className="edit-select"
+                                                        >
+                                                            <option value="User">User</option>
+                                                            <option value="Admin">Admin</option>
+                                                            <option value="Moderator">Moderator</option>
+                                                        </select>
+                                                    ) : (
+                                                        <span
+                                                            className="role-badge"
+                                                            style={{ backgroundColor: getRoleColor(selectedUser.role) }}
+                                                        >
+                                                            {getRoleIcon(selectedUser.role)} {selectedUser.role}
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                {selectedUser.phone && (
-                                                    <div className="detail-item">
-                                                        <span className="label">Telefon:</span>
-                                                        <span className="value">{selectedUser.phone}</span>
-                                                    </div>
-                                                )}
+                                                <div className="detail-item">
+                                                    <span className="label">Telefon:</span>
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editFormData.phone}
+                                                            onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                                                            className="edit-input"
+                                                            placeholder="+90..."
+                                                        />
+                                                    ) : (
+                                                        <span className="value">{selectedUser.phone || "Belirtilmemiş"}</span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
 
@@ -498,30 +612,55 @@ function AdminUsersPage() {
                             </div>
 
                             <div className="modal-footer">
-                                <button
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowUserModal(false)}
-                                >
-                                    Kapat
-                                </button>
-                                <button
-                                    className={`btn ${selectedUser.isActive ? 'btn-warning' : 'btn-success'}`}
-                                    onClick={() => {
-                                        toggleUserStatus(selectedUser.id, selectedUser.isActive);
-                                        setShowUserModal(false);
-                                    }}
-                                >
-                                    {selectedUser.isActive ? '⏸️ Pasifleştir' : '▶️ Aktifleştir'}
-                                </button>
-                                <button
-                                    className="btn btn-danger"
-                                    onClick={() => {
-                                        deleteUser(selectedUser.id);
-                                        setShowUserModal(false);
-                                    }}
-                                >
-                                    🗑️ Sil
-                                </button>
+                                {isEditing ? (
+                                    <>
+                                        <button
+                                            className="btn btn-secondary"
+                                            onClick={handleCancelEdit}
+                                        >
+                                            İptal
+                                        </button>
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={handleSaveEdit}
+                                        >
+                                            💾 Kaydet
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            className="btn btn-secondary"
+                                            onClick={() => setShowUserModal(false)}
+                                        >
+                                            Kapat
+                                        </button>
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={handleEditClick}
+                                        >
+                                            ✏️ Düzenle
+                                        </button>
+                                        <button
+                                            className={`btn ${selectedUser.isActive ? 'btn-warning' : 'btn-success'}`}
+                                            onClick={() => {
+                                                toggleUserStatus(selectedUser.id, selectedUser.isActive);
+                                                setShowUserModal(false);
+                                            }}
+                                        >
+                                            {selectedUser.isActive ? '⏸️ Pasifleştir' : '▶️ Aktifleştir'}
+                                        </button>
+                                        <button
+                                            className="btn btn-danger"
+                                            onClick={() => {
+                                                deleteUser(selectedUser.id);
+                                                setShowUserModal(false);
+                                            }}
+                                        >
+                                            🗑️ Sil
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

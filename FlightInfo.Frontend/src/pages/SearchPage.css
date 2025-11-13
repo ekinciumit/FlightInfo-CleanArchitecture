@@ -1,13 +1,30 @@
  
 .search-page { 
     min-height: 100vh; 
-    background: url('/images/fraport_tav_antalya_airport_cover.jpg'); 
+    background: transparent;
     background-size: cover; 
     background-position: center; 
     background-attachment: fixed; 
     padding: 1rem 0; 
-    position: relative; 
+    position: relative;
 }
+
+.search-page::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--bg-current-image);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    z-index: -1;
+    transition: background-image 1s ease-in-out;
+    pointer-events: none;
+}
+
 
 
     .search-page .container { 
@@ -440,7 +457,7 @@
 
 .duration-icon { 
     font-size: 1.5rem; 
-    color: #667eea; 
+    color: #6eafff; 
 }
 
 .duration-text { 
@@ -517,7 +534,7 @@
 .price-amount {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #667eea;
+    color: #6eafff;
     margin: 0.25rem 0;
 }
 
@@ -583,7 +600,7 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%);
     color: white;
     padding: 10px 20px; 
     font-size: 0.9rem; 
@@ -594,25 +611,25 @@
 
     .btn-primary:hover { 
         transform: translateY(-2px); 
-        background: #667eea; 
+        background: #6eafff; 
         color: white; 
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); 
+        box-shadow: 0 4px 12px rgba(110, 175, 255, 0.4); 
     }
 
     .btn-primary:focus { 
-        background: #667eea; 
+        background: #6eafff; 
         color: white; 
         outline: none; 
     }
 
 .btn-outline { 
     background: transparent; 
-    color: #667eea; 
-    border: 2px solid #667eea; 
+    color: #6eafff; 
+    border: 2px solid #6eafff; 
 }
 
     .btn-outline:hover { 
-        background: #667eea; 
+        background: #6eafff; 
         color: white; 
         transform: translateY(-2px); 
     }

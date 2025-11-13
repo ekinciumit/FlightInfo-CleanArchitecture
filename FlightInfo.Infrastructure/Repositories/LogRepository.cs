@@ -107,6 +107,14 @@ namespace FlightInfo.Infrastructure.Repositories
                 .Where(l => l.CreatedAt >= startDate && l.CreatedAt <= endDate)
                 .ToListAsync();
         }
+
+        public async Task<int> ClearAllAsync()
+        {
+            var logs = await _context.Logs.ToListAsync();
+            int count = logs.Count;
+            _context.Logs.RemoveRange(logs);
+            return count;
+        }
     }
 }
 

@@ -10,6 +10,7 @@ namespace FlightInfo.Application.Interfaces.Services
         Task<UserDto> UpdateUserAsync(int id, UpdateUserRequest request);
         Task<UserDto> UpdateProfileAsync(int userId, string? fullName, string? phone);
         Task<bool> DeleteUserAsync(int id);
+        Task<bool> ToggleUserStatusAsync(int id, bool isActive);
     }
 }
 

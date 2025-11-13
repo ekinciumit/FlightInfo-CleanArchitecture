@@ -30,7 +30,10 @@ namespace FlightInfo.Application.Services
                     Email = u.Email,
                     FullName = u.FullName,
                     Role = u.Role.ToString(),
-                    CreatedAt = u.CreatedAt
+                    CreatedAt = u.CreatedAt,
+                    LastLoginAt = u.LastLoginAt,
+                    Phone = u.Phone,
+                    IsActive = u.IsActive
                 });
         }
 
@@ -45,18 +48,29 @@ namespace FlightInfo.Application.Services
                 Email = user.Email,
                 FullName = user.FullName,
                 Role = user.Role.ToString(),
-                CreatedAt = user.CreatedAt
+                CreatedAt = user.CreatedAt,
+                LastLoginAt = user.LastLoginAt,
+                Phone = user.Phone,
+                IsActive = user.IsActive
             };
         }
 
         public async Task<UserDto> UpdateUserAsync(int id, UpdateUserRequest request)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null)
+            if (user == null || user.IsDeleted)
                 throw new ArgumentException("User not found");
 
-            user.FullName = request.FullName ?? user.FullName;
-            user.Role = request.Role ?? user.Role;
+            // Email güncellenemez - güvenlik nedeniyle
+            if (!string.IsNullOrWhiteSpace(request.FullName))
+                user.FullName = request.FullName;
+
+            if (!string.IsNullOrWhiteSpace(request.Role))
+                user.Role = request.Role;
+
+            // Phone güncellemesi
+            if (request.Phone != null)
+                user.Phone = request.Phone;
 
             await _userRepository.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();
@@ -67,7 +81,10 @@ namespace FlightInfo.Application.Services
                 Email = user.Email,
                 FullName = user.FullName,
                 Role = user.Role.ToString(),
-                CreatedAt = user.CreatedAt
+                CreatedAt = user.CreatedAt,
+                LastLoginAt = user.LastLoginAt,
+                Phone = user.Phone,
+                IsActive = user.IsActive
             };
         }
 
@@ -93,7 +110,10 @@ namespace FlightInfo.Application.Services
                 Email = user.Email,
                 FullName = user.FullName,
                 Role = user.Role.ToString(),
-                CreatedAt = user.CreatedAt
+                CreatedAt = user.CreatedAt,
+                LastLoginAt = user.LastLoginAt,
+                Phone = user.Phone,
+                IsActive = user.IsActive
             };
         }
 
@@ -105,6 +125,19 @@ namespace FlightInfo.Application.Services
 
             // Soft delete
             user.IsDeleted = true;
+            await _userRepository.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> ToggleUserStatusAsync(int id, bool isActive)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null || user.IsDeleted)
+                return false;
+
+            user.IsActive = isActive;
             await _userRepository.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();
 

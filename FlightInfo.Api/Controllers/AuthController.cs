@@ -31,11 +31,22 @@ namespace FlightInfo.Api.Controllers
         {
             var result = await _authService.LoginAsync(request.Email, request.Password);
 
+            // 2FA gerekiyorsa önce bunu kontrol et
             if (result.RequiresTwoFactor)
             {
                 return Ok(new {
                     Message = result.Message,
                     RequiresTwoFactor = true,
+                    UserId = result.UserId
+                });
+            }
+
+            // Hata durumunda BadRequest döndür
+            if (!result.Success)
+            {
+                return BadRequest(new {
+                    Message = result.Message,
+                    RequiresTwoFactor = false,
                     UserId = result.UserId
                 });
             }

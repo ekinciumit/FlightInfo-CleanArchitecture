@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import ConfirmationModal from "../components/ConfirmationModal";
 import "./AdminLogsPage.css";
 
 interface Log {
@@ -38,6 +39,7 @@ function AdminLogsPage() {
     const [levelFilter, setLevelFilter] = useState("all");
     const [sortBy, setSortBy] = useState("timestamp");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
 
     useEffect(() => {
         loadLogs();
@@ -126,35 +128,44 @@ function AdminLogsPage() {
         setFilteredLogs(filtered);
     };
 
-    const getLevelColor = (level: string) => {
-        if (!level) return "#2c3e50";
-        switch (level.toLowerCase()) {
-            case "error":
-                return "#e74c3c";
-            case "warning":
-                return "#f39c12";
-            case "info":
-                return "#3498db";
-            case "debug":
-                return "#95a5a6";
+    const getActionText = (action: string | null | undefined): string => {
+        if (!action) return "Bilinmeyen İşlem";
+        
+        switch (action.toUpperCase()) {
+            case "USER_LOGIN":
+                return "Kullanıcı Girişi";
+            case "USER_LOGOUT":
+                return "Kullanıcı Çıkışı";
+            case "USER_CREATED":
+                return "Kullanıcı Oluşturuldu";
+            case "USER_UPDATED":
+                return "Kullanıcı Güncellendi";
+            case "USER_DELETED":
+                return "Kullanıcı Silindi";
+            case "FLIGHT_CREATED":
+                return "Uçuş Oluşturuldu";
+            case "FLIGHT_UPDATED":
+                return "Uçuş Güncellendi";
+            case "FLIGHT_DELETED":
+                return "Uçuş Silindi";
+            case "RESERVATION_CREATED":
+                return "Rezervasyon Oluşturuldu";
+            case "RESERVATION_CANCELLED":
+                return "Rezervasyon İptal Edildi";
+            case "RESERVATION_UPDATED":
+                return "Rezervasyon Güncellendi";
+            case "PASSWORD_CHANGED":
+                return "Şifre Değiştirildi";
+            case "PROFILE_UPDATED":
+                return "Profil Güncellendi";
             default:
-                return "#2c3e50";
-        }
-    };
-
-    const getLevelIcon = (level: string) => {
-        if (!level) return "📝";
-        switch (level.toLowerCase()) {
-            case "error":
-                return "❌";
-            case "warning":
-                return "⚠️";
-            case "info":
-                return "ℹ️";
-            case "debug":
-                return "🔍";
-            default:
-                return "📝";
+                // Eğer tanımlı değilse, action'ı daha okunabilir hale getir
+                return action
+                    .replace(/_/g, ' ')
+                    .toLowerCase()
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
         }
     };
 
@@ -177,16 +188,102 @@ function AdminLogsPage() {
         });
     };
 
-    const clearLogs = async () => {
-        if (window.confirm("Tüm logları silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!")) {
-            try {
-                // Bu endpoint mevcut değil, sadece UI'da gösterelim
-                console.log("Log temizleme işlemi - Backend endpoint gerekli");
-                alert("Log temizleme özelliği henüz backend'de mevcut değil");
-            } catch (error) {
-                console.error("Log temizleme hatası:", error);
+    const formatLogDetails = (data: string, action: string, userName?: string): string => {
+        try {
+            const parsed = JSON.parse(data);
+            const displayName = parsed.Email || parsed.UserName || userName || "Bilinmeyen Kullanıcı";
+            
+            switch (action?.toUpperCase()) {
+                case "USER_LOGIN":
+                    const ip = parsed.IPAddress || parsed.IpAddress || "Bilinmeyen IP";
+                    const userAgent = parsed.UserAgent || parsed.Browser || "Web Tarayıcı";
+                    return `${displayName} (${ip}) IP adresinden "${userAgent}" ile giriş yaptı`;
+                
+                case "USER_LOGOUT":
+                    return `${displayName} sistemden çıkış yaptı`;
+                
+                case "FLIGHT_CREATED":
+                case "FLIGHT_UPDATED":
+                    const flightNum = parsed.FlightNumber || parsed.flightNumber || "Bilinmeyen";
+                    const origin = parsed.Origin || parsed.origin || "";
+                    const dest = parsed.Destination || parsed.destination || "";
+                    const route = origin && dest ? ` (${origin} → ${dest})` : "";
+                    return `${displayName}, ${flightNum}${route} uçuşunu ${action?.includes("CREATED") ? "oluşturdu" : "güncelledi"}`;
+                
+                case "RESERVATION_CREATED":
+                case "RESERVATION_CANCELLED":
+                    const flightNumRes = parsed.FlightNumber || parsed.flightNumber || "Bilinmeyen";
+                    return `${displayName}, ${flightNumRes} uçuşu için rezervasyon ${action?.includes("CANCELLED") ? "iptal etti" : "oluşturdu"}`;
+                
+                case "USER_CREATED":
+                case "USER_UPDATED":
+                    const targetUser = parsed.FullName || parsed.fullName || parsed.Email || "Kullanıcı";
+                    return `${displayName}, ${targetUser} kullanıcısını ${action?.includes("CREATED") ? "oluşturdu" : "güncelledi"}`;
+                
+                default:
+                    // Genel format: Key-value çiftlerini okunabilir hale getir
+                    const parts: string[] = [];
+                    Object.keys(parsed).forEach(key => {
+                        if (key !== "Email" && key !== "UserName" && key !== "IPAddress") {
+                            const value = parsed[key];
+                            if (value && typeof value === 'string' && value.length < 100) {
+                                parts.push(`${key}: ${value}`);
+                            }
+                        }
+                    });
+                    return parts.length > 0 ? parts.join(", ") : `${displayName} işlem gerçekleştirdi`;
+            }
+        } catch {
+            // JSON parse edilemezse direkt göster
+            return data.length > 150 ? data.substring(0, 150) + "..." : data;
+        }
+    };
+
+    const handleClearClick = () => {
+        setShowClearConfirm(true);
+    };
+
+    const handleClearConfirm = async () => {
+        setShowClearConfirm(false);
+        try {
+            const response = await fetch("http://localhost:7104/api/Log/clear", {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: "Loglar temizlenirken hata oluştu" }));
+                throw new Error(errorData.message || "Loglar temizlenirken hata oluştu");
+            }
+
+            const result = await response.json();
+            
+            // Başarı mesajı göster
+            if ((window as any).showToast) {
+                (window as any).showToast.success(
+                    "Başarılı",
+                    `${result.deletedCount || 0} log kaydı başarıyla silindi.`
+                );
+            }
+            
+            // Logları yeniden yükle
+            await loadLogs();
+        } catch (error: any) {
+            console.error("Log temizleme hatası:", error);
+            if ((window as any).showToast) {
+                (window as any).showToast.error(
+                    "Hata",
+                    error.message || "Loglar temizlenirken bir hata oluştu"
+                );
             }
         }
+    };
+
+    const handleClearCancel = () => {
+        setShowClearConfirm(false);
     };
 
     if (isLoading) {
@@ -223,18 +320,32 @@ function AdminLogsPage() {
             <div className="container">
                 {/* Header */}
                 <div className="logs-header">
-                    <div className="header-left">
-                        <Link to="/admin" className="back-button">
-                            ← Admin Paneli
-                        </Link>
-                        <h1>📊 Sistem Logları</h1>
-                        <p>Toplam {filteredLogs.length} log kaydı</p>
+                    <Link to="/admin" className="back-button">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span>Admin Paneli</span>
+                    </Link>
+                    <div className="header-main">
+                        <div className="header-icon">📊</div>
+                        <div className="header-text-content">
+                            <h1>Sistem Logları</h1>
+                            <div className="log-count-badge">
+                                <span className="count-number">{filteredLogs.length}</span>
+                                <span className="count-label">log kaydı</span>
+                            </div>
+                        </div>
                     </div>
                     <div className="header-actions">
-                        <button onClick={loadLogs} className="btn btn-secondary">
-                            🔄 Yenile
+                        <button onClick={loadLogs} className="refresh-button">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 4V10H7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M23 20V14H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14L18.36 18.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            <span>Yenile</span>
                         </button>
-                        <button onClick={clearLogs} className="btn btn-danger">
+                        <button onClick={handleClearClick} className="btn btn-danger">
                             🗑️ Temizle
                         </button>
                     </div>
@@ -304,14 +415,6 @@ function AdminLogsPage() {
                         filteredLogs.map(log => (
                             <div key={log.id} className="log-card">
                                 <div className="log-header">
-                                    <div className="log-level">
-                                        <span
-                                            className="level-badge"
-                                            style={{ backgroundColor: getLevelColor(log.level) }}
-                                        >
-                                            {getLevelIcon(log.level)} {log.level}
-                                        </span>
-                                    </div>
                                     <div className="log-timestamp">
                                         {formatDate(log.timestamp || log.createdAt)}
                                     </div>
@@ -319,33 +422,22 @@ function AdminLogsPage() {
 
                                 <div className="log-content">
                                     <div className="log-message">
-                                        <strong>Aksiyon:</strong> {log.action || log.message || 'N/A'}
+                                        <strong>Aksiyon:</strong> {getActionText(log.action)}
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
-                                        {log.userName && (
-                                            <div className="log-user" style={{ margin: '0', flex: '1', minWidth: '120px' }}>
-                                                <strong>Kullanıcı:</strong> {log.userName}
-                                            </div>
-                                        )}
-
-                                        {log.flightNumber && log.flightNumber !== "Flight Info Not Available" && (
-                                            <div className="log-flight" style={{ margin: '0', flex: '1', minWidth: '120px' }}>
+                                    {log.flightNumber && log.flightNumber !== "Flight Info Not Available" && (
+                                        <div style={{ marginTop: '4px' }}>
+                                            <div className="log-flight" style={{ margin: '0' }}>
                                                 <strong>Uçuş:</strong> {log.flightNumber}
                                             </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
 
                                     {log.data && (
-                                        <div className="log-data">
-                                            <strong>Detaylar:</strong>
-                                            <pre className="log-data-content">{(() => {
-                                                try {
-                                                    return JSON.stringify(JSON.parse(log.data), null, 2);
-                                                } catch {
-                                                    return log.data;
-                                                }
-                                            })()}</pre>
+                                        <div className="log-details">
+                                            <div className="log-details-content">
+                                                {formatLogDetails(log.data, log.action, log.userName)}
+                                            </div>
                                         </div>
                                     )}
 
@@ -378,6 +470,18 @@ function AdminLogsPage() {
                         ))
                     )}
                 </div>
+
+                {/* Confirmation Modal */}
+                <ConfirmationModal
+                    isOpen={showClearConfirm}
+                    title="Logları Temizle"
+                    message="Tüm logları silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!"
+                    confirmText="Evet, Temizle"
+                    cancelText="İptal"
+                    type="danger"
+                    onConfirm={handleClearConfirm}
+                    onCancel={handleClearCancel}
+                />
             </div>
         </div>
     );

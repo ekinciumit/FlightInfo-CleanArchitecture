@@ -4,32 +4,28 @@
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    background:  
-        linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%), 
-        url('/images/fraport_tav_antalya_airport_cover.jpg'); 
     background-size: cover; 
     background-position: center; 
     background-attachment: fixed; 
     padding: 20px; 
     position: relative; 
-    overflow: hidden; 
+    overflow: hidden;
 }
 
-.auth-container::before { 
-    content: ''; 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    right: 0; 
-    bottom: 0; 
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><path d="M0,50 Q250,0 500,50 T1000,50 L1000,100 L0,100 Z"/></svg>') repeat-x; 
-    background-size: 1000px 100px; 
-    animation: wave 20s linear infinite; 
-}
-
-@keyframes wave { 
-    0% { transform: translateX(0); } 
-    100% { transform: translateX(-1000px); } 
+.auth-container::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--bg-current-image);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    z-index: -1;
+    transition: background-image 1s ease-in-out;
+    pointer-events: none;
 }
 
 .auth-card { 
@@ -63,32 +59,33 @@
 
 .logo-icon { 
     font-size: 2.5rem; 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%); 
     -webkit-background-clip: text; 
     -webkit-text-fill-color: transparent; 
     background-clip: text; 
 }
 
-.logo-text { 
+.auth-card .logo-text { 
     font-size: 1.8rem; 
     font-weight: 700; 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent; 
     background-clip: text; 
 }
 
 .auth-header h2 { 
     font-size: 2rem; 
-    color: #333; 
+    color: var(--auth-text-color, #ffffff); 
     margin: 0 0 10px 0; 
     font-weight: 700; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: color 0.5s ease;
 }
 
 .auth-header p { 
-    color: #666; 
+    color: var(--auth-text-secondary, #ffffff); 
     margin: 0; 
     font-size: 1rem; 
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    transition: color 0.5s ease;
 }
 
 .auth-form { 
@@ -105,32 +102,37 @@
 
 .form-group label { 
     font-weight: 600; 
-    color: #333; 
+    color: var(--auth-label-color, #ffffff); 
     font-size: 0.95rem; 
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    transition: color 0.5s ease;
 }
 
 .form-group input { 
     padding: 15px; 
-    border: 2px solid #e0e0e0; 
+    border: 2px solid rgba(255, 255, 255, 0.2); 
     border-radius: 12px; 
     font-size: 1rem; 
     transition: all 0.3s ease; 
-    background: #f8f9ff; 
+    background: rgba(255, 255, 255, 0.1); 
+    color: var(--auth-input-text, #ffffff);
+    backdrop-filter: blur(10px);
 }
 
 .form-group input:focus { 
     outline: none; 
-    border-color: #667eea; 
-    background: white; 
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); 
+    border-color: rgba(110, 175, 255, 0.6); 
+    background: rgba(255, 255, 255, 0.15); 
+    box-shadow: 0 0 0 3px rgba(110, 175, 255, 0.2); 
 }
 
 .form-group input::placeholder { 
-    color: #999; 
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 0.7;
 }
 
 .auth-button { 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%); 
     color: white; 
     border: none; 
     padding: 18px; 
@@ -144,8 +146,8 @@
 
 .auth-button:hover { 
     transform: translateY(-2px); 
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); 
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%); 
+    box-shadow: 0 10px 30px rgba(110, 175, 255, 0.3); 
+    background: linear-gradient(135deg, #6eafff 0%, #1453c9 100%); 
 }
 
 .auth-button:active { 
@@ -188,14 +190,14 @@
 }
 
 .auth-link { 
-    color: #667eea; 
+    color: #6eafff; 
     text-decoration: none; 
     font-weight: 600; 
     transition: all 0.3s ease; 
 }
 
 .auth-link:hover { 
-    color: #5a6fd8; 
+    color: #6eafff; 
     text-decoration: underline; 
 }
 
@@ -214,7 +216,7 @@
         font-size: 1.8rem; 
     }
     
-    .logo-text { 
+    .auth-card .logo-text { 
         font-size: 1.5rem; 
     }
     

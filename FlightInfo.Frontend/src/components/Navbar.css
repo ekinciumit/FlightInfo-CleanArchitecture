@@ -9,6 +9,7 @@
     z-index: 1000; 
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    overflow: visible;
 }
 
     .navbar:hover { 
@@ -26,12 +27,16 @@
     justify-content: space-between; 
     align-items: center; 
     height: 70px; 
+    position: relative;
+    overflow: visible;
 }
 
 .nav-left { 
     display: flex; 
     align-items: center; 
     gap: 20px; 
+    position: relative;
+    overflow: visible;
 }
 
 .nav-logo { 
@@ -42,103 +47,48 @@
     color: #333; 
     font-weight: 700; 
     font-size: 1.5rem; 
+    position: relative;
+    overflow: visible;
+    min-width: 180px;
 }
 
 .logo-icon { 
-    font-size: 2rem; 
-    transition: transform 0.3s ease; 
-    animation: planeFly 4s linear infinite; 
-    filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.4)); 
-    position: relative; 
-}
-
-    .logo-icon::after { 
-        content: '✈️'; 
-        position: absolute; 
-        top: 0; 
-        left: 0; 
-        opacity: 0.3; 
-        animation: planeTrail 4s linear infinite; 
-    }
-
-@keyframes planeTrail { 
-    0% { 
-        transform: translateX(-20px) scale(0.5); 
-        opacity: 0; 
-    }
-
-    25% { 
-        transform: translateX(-10px) scale(0.7); 
-        opacity: 0.3; 
-    }
-
-    50% { 
-        transform: translateX(0px) scale(0.9); 
-        opacity: 0.2; 
-    }
-
-    75% { 
-        transform: translateX(10px) scale(0.7); 
-        opacity: 0.1; 
-    }
-
-    100% { 
-        transform: translateX(20px) scale(0.5); 
-        opacity: 0; 
-    }
-}
-
-@keyframes planeFly { 
-    0% { 
-        transform: translateX(-15px) translateY(0px) rotate(-10deg) scale(0.8); 
-        opacity: 0.7; 
-    }
-
-    25% { 
-        transform: translateX(0px) translateY(-5px) rotate(0deg) scale(1.1); 
-        opacity: 1; 
-    }
-
-    50% { 
-        transform: translateX(15px) translateY(-3px) rotate(5deg) scale(1); 
-        opacity: 1; 
-    }
-
-    75% { 
-        transform: translateX(8px) translateY(2px) rotate(3deg) scale(0.9); 
-        opacity: 0.9; 
-    }
-
-    100% { 
-        transform: translateX(20px) translateY(0px) rotate(8deg) scale(0.7); 
-        opacity: 0.6; 
-    }
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 8px rgba(173, 216, 230, 0.6)); 
+    position: static; 
+    display: block;
+    z-index: 10;
 }
 
 .nav-logo:hover .logo-icon { 
-    transform: rotate(15deg) scale(1.1); 
-    animation-play-state: paused; 
+    transform: scale(1.05); 
 }
 
-.logo-text { 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent; 
-    background-clip: text; 
-    animation: textGlow 2s ease-in-out infinite alternate; 
+.navbar .logo-text { 
+    background: linear-gradient(135deg, #c9d3df 0%, #6eafff 50%, #1453c9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 900;
+    font-size: 3rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    -webkit-text-stroke: 1px #ffffff;
+    margin-left: 35px;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: transparent;
 }
 
-@keyframes textGlow { 
-    0% { 
-        filter: brightness(1); 
-        text-shadow: 0 0 8px rgba(102, 126, 234, 0.6); 
-    }
-
-    100% { 
-        filter: brightness(1.3); 
-        text-shadow: 0 0 20px rgba(102, 126, 234, 0.8), 0 0 30px rgba(102, 126, 234, 0.4); 
-    }
+.navbar .logo-text:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
 }
+
 
 .nav-menu { 
     display: flex; 
@@ -201,7 +151,7 @@
 }
 
 .nav-link.register { 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    background: linear-gradient(135deg, #c9d3df 0%, #6eafff 50%, #1453c9 100%);
     color: white; 
     padding: 10px 20px; 
     border-radius: 25px; 
@@ -210,8 +160,8 @@
 
 .nav-link.register:hover { 
     transform: translateY(-2px); 
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); 
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%); 
+    box-shadow: 0 5px 15px rgba(110, 175, 255, 0.3); 
+    background: linear-gradient(135deg, #6eafff 0%, #1453c9 100%); 
 }
 
 .nav-link.admin-link { 
@@ -247,11 +197,11 @@
 }
 
     .nav-user:hover { 
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%); 
         color: white; 
         transform: translateY(-3px) scale(1.05); 
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4), 
-        0 4px 15px rgba(102, 126, 234, 0.2); 
+        box-shadow: 0 8px 25px rgba(110, 175, 255, 0.4), 
+        0 4px 15px rgba(110, 175, 255, 0.2); 
         animation-play-state: paused; 
     }
 

@@ -218,6 +218,14 @@ namespace FlightInfo.Application.Services
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null) return (false, "Kullanıcı bulunamadı.", "", null);
 
+                // Silinmiş kullanıcı kontrolü
+                if (user.IsDeleted)
+                    return (false, "Bu hesap silinmiş. Lütfen yönetici ile iletişime geçin.", "", null);
+
+                // Aktif kullanıcı kontrolü
+                if (!user.IsActive)
+                    return (false, "🔒 Erişiminiz engellendi. Hesabınız yönetici tarafından devre dışı bırakılmıştır. Lütfen yönetici ile iletişime geçin veya destek ekibiyle iletişime geçin.", "", null);
+
                 var verifyResult = await VerifyCodeAsync(userId, code, "Email");
                 if (!verifyResult.Success)
                     return (false, verifyResult.Message, "", null);

@@ -83,6 +83,14 @@ namespace FlightInfo.Application.Services
             if (user == null || !VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
             return (false, "Email veya şifre hatalı.", "", null, false, null);
 
+            // Silinmiş kullanıcı kontrolü
+            if (user.IsDeleted)
+                return (false, "Bu hesap silinmiş. Lütfen yönetici ile iletişime geçin.", "", null, false, null);
+
+            // Aktif kullanıcı kontrolü
+            if (!user.IsActive)
+                return (false, "🔒 Erişiminiz engellendi. Hesabınız yönetici tarafından devre dışı bırakılmıştır. Lütfen yönetici ile iletişime geçin veya destek ekibiyle iletişime geçin.", "", null, false, null);
+
         // 2FA kontrolü - eğer 2FA aktifse kod iste
         if (user.TwoFactorEnabled && user.TwoFactorType == "Email")
         {

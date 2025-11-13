@@ -41,7 +41,7 @@ const TwoFactorVerify: React.FC<TwoFactorVerifyProps> = ({
     useEffect(() => {
         const sendInitialEmail = async () => {
             try {
-                const response = await fetch('/api/auth/send-email-code', {
+                const response = await fetch('http://localhost:7104/api/Auth/send-email-code', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ const TwoFactorVerify: React.FC<TwoFactorVerifyProps> = ({
     setMessage('');
 
     try {
-      const response = await fetch('/api/auth/verify-2fa-login', {
+      const response = await fetch('http://localhost:7104/api/Auth/verify-2fa-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ const TwoFactorVerify: React.FC<TwoFactorVerifyProps> = ({
     try {
       let response;
       if (twoFactorType === 'SMS') {
-        response = await fetch('/api/auth/send-sms-code', {
+        response = await fetch('http://localhost:7104/api/Auth/send-sms-code', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const TwoFactorVerify: React.FC<TwoFactorVerifyProps> = ({
           }),
         });
       } else {
-        response = await fetch('/api/auth/send-email-code', {
+        response = await fetch('http://localhost:7104/api/Auth/send-email-code', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

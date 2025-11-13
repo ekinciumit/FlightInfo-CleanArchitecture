@@ -1,7 +1,7 @@
 :root { 
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif; 
   line-height: 1.5; 
-  font-weight: 400; 
+  font-weight: 400;
 
   color-scheme: light; 
   color: #213547; 
@@ -11,15 +11,80 @@
   text-rendering: optimizeLegibility; 
   -webkit-font-smoothing: antialiased; 
   -moz-osx-font-smoothing: grayscale; 
+
+  /* Background Images - Single Source of Truth */
+  --bg-image-main: url('/images/1.png');
+  --bg-image-login: url('/images/2.png');
+  --bg-image-register: url('/images/3.png');
+  --bg-image-search: url('/images/4.png');
+  --bg-image-profile: url('/images/5.png');
+  --bg-image-homepage: url('/images/6.png');
+  --bg-image-homepage-features: url('/images/7.png');
+  --bg-image-default: url('/images/8.png');
+  
+  /* Current synchronized background image (set by JavaScript) */
+  --bg-current-image: var(--bg-image-main);
+  
+  /* Background Animation Settings */
+  --bg-animation-duration: 3s;
+  --bg-animation-easing: ease-in-out;
+}
+
+/* Background Slideshow Animation - Synchronized across all pages */
+/* All pages show the same image at the same time */
+@keyframes backgroundSlideshow {
+  0%, 12.49% {
+    background-image: var(--bg-image-main);
+  }
+  12.5%, 24.99% {
+    background-image: var(--bg-image-login);
+  }
+  25%, 37.49% {
+    background-image: var(--bg-image-register);
+  }
+  37.5%, 49.99% {
+    background-image: var(--bg-image-search);
+  }
+  50%, 62.49% {
+    background-image: var(--bg-image-profile);
+  }
+  62.5%, 74.99% {
+    background-image: var(--bg-image-homepage);
+  }
+  75%, 87.49% {
+    background-image: var(--bg-image-homepage-features);
+  }
+  87.5%, 100% {
+    background-image: var(--bg-image-default);
+  }
+}
+
+/* Crossfade transition between images */
+@keyframes backgroundCrossfade {
+  0% {
+    opacity: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  11.5% {
+    opacity: 1;
+  }
+  12.5% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 a { 
   font-weight: 500; 
-  color: #646cff; 
+  color: #6eafff; 
   text-decoration: inherit; 
 }
 a:hover { 
-  color: #535bf2; 
+  color: #6eafff; 
 }
 
 body { 
@@ -41,13 +106,13 @@ button {
   font-size: 1em; 
   font-weight: 500; 
   font-family: inherit; 
-  background-color: #667eea; 
+  background-color: #6eafff; 
   color: white; 
   cursor: pointer; 
   transition: all 0.3s ease; 
 }
 button:hover { 
-  background-color: #5a6fd8; 
+  background-color: #1453c9; 
   transform: translateY(-1px); 
 }
 button:focus,

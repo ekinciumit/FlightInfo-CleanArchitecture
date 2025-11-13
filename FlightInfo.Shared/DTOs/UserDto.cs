@@ -12,6 +12,9 @@ namespace FlightInfo.Shared.DTOs
         public string Role { get; set; } = "User";
 
         public DateTime CreatedAt { get; set; }
+        public DateTime? LastLoginAt { get; set; }
+        public string? Phone { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }
 

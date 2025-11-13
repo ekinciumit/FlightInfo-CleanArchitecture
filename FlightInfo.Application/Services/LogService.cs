@@ -163,6 +163,13 @@ namespace FlightInfo.Application.Services
             return true;
         }
 
+        public async Task<int> ClearAllLogsAsync()
+        {
+            int count = await _logRepository.ClearAllAsync();
+            await _unitOfWork.SaveChangesAsync();
+            return count;
+        }
+
         // Kullanıcı aktivite logları
         public async Task LogUserLoginAsync(int userId, string email, string ipAddress)
         {

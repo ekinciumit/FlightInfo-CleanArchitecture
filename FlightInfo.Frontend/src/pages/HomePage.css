@@ -88,12 +88,13 @@
     text-shadow: 
         0 4px 8px rgba(0,0,0,0.6), 
         0 2px 4px rgba(0,0,0,0.4); 
-    color: #ffffff; 
+    color: var(--home-hero-text, #ffffff); 
     text-align: center; 
     line-height: 1.2; 
     max-width: 800px; 
     margin-left: auto; 
     margin-right: auto; 
+    transition: color 0.5s ease;
 }
 
 .hero p { 
@@ -103,13 +104,14 @@
     text-shadow: 
         0 2px 4px rgba(0,0,0,0.6), 
         0 1px 2px rgba(0,0,0,0.4); 
-    color: #ffffff; 
+    color: var(--home-hero-subtitle, #ffffff); 
     font-weight: 500; 
     text-align: center; 
     line-height: 1.4; 
     max-width: 600px; 
     margin-left: auto; 
     margin-right: auto; 
+    transition: color 0.5s ease;
 }
 
  
@@ -160,10 +162,10 @@
     cursor: pointer; 
     padding: 12px 24px; 
     border-radius: 2px; 
-    transition: all 0.3s ease; 
+    transition: all 0.3s ease, color 0.5s ease; 
     border: 2px solid rgba(255, 255, 255, 0.3); 
     background: rgba(255, 255, 255, 0.1); 
-    color: #333333; 
+    color: var(--home-form-label, #ffffff); 
     backdrop-filter: blur(10px); 
     text-align: center; 
     min-width: 120px; 
@@ -171,7 +173,7 @@
 }
 
 .trip-type label:hover { 
-    border-color: rgba(102, 126, 234, 0.6); 
+    border-color: rgba(110, 175, 255, 0.6); 
     background: rgba(255, 255, 255, 0.2); 
     transform: translateY(-2px); 
 }
@@ -182,8 +184,8 @@
 
 .trip-type input[type="radio"]:checked + span,
 .trip-type input[type="radio"]:checked { 
-    border-color: #667eea; 
-    background: #667eea; 
+    border-color: #6eafff; 
+    background: #6eafff; 
     color: #333333; 
 }
 
@@ -216,14 +218,17 @@
     pointer-events: none;
 }
 
-.form-group label { 
+.form-group label,
+.search-form .form-group label,
+.form-row .form-group label { 
     font-weight: 600; 
-    margin-bottom: 8px; 
-    color: #ffffff; 
-    font-size: 0.9rem; 
+    margin-bottom: 10px; 
+    color: var(--home-form-label, #ffffff) !important; 
+    font-size: 1.1rem; 
     text-shadow: 0 1px 2px rgba(0,0,0,0.3); 
     display: block; 
     text-align: left; 
+    transition: color 0.5s ease;
 }
 
 .form-group input,
@@ -233,10 +238,10 @@
     border-radius: 20px; 
     font-size: 1rem; 
     font-weight: 500; 
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s ease; 
     background: rgba(255, 255, 255, 0.2); 
     backdrop-filter: blur(25px); 
-    color: #333333 !important; 
+    color: var(--home-form-input-text, #333333) !important; 
     position: relative; 
     overflow: hidden; 
     box-shadow: 
@@ -255,7 +260,7 @@
     box-shadow: 
         0 8px 24px rgba(0,0,0,0.1), 
         inset 0 1px 0 rgba(255, 255, 255, 0.3); 
-    color: #333333 !important; 
+    color: var(--home-form-input-text, #333333) !important; 
 }
 
 .form-group input::placeholder,
@@ -268,36 +273,36 @@
 .form-group input:focus,
 .form-group select:focus { 
     outline: none; 
-    border-color: rgba(102, 126, 234, 0.6); 
+    border-color: rgba(110, 175, 255, 0.6); 
     background: rgba(255, 255, 255, 0.3); 
     box-shadow: 
-        0 0 0 4px rgba(102, 126, 234, 0.2), 
+        0 0 0 4px rgba(110, 175, 255, 0.2), 
         0 12px 32px rgba(0,0,0,0.1), 
         inset 0 1px 0 rgba(255, 255, 255, 0.3); 
     transform: translateY(-3px); 
-    color: #333333 !important; 
+    color: var(--home-form-input-text, #333333) !important; 
 }
 
  
 .form-group select option { 
-    background: #ffffff; 
-    color: #333333; 
+    background: var(--home-form-option-bg, #ffffff); 
+    color: var(--home-form-option-text, #333333); 
     padding: 10px; 
 }
 
  
 .form-group input[type="date"] { 
-    color: #333333 !important; 
+    color: var(--home-form-input-text, #333333) !important; 
     background: rgba(255, 255, 255, 0.2) !important; 
 }
 
 .form-group input[type="date"]:hover { 
-    color: #333333 !important; 
+    color: var(--home-form-input-text, #333333) !important; 
     background: rgba(255, 255, 255, 0.25) !important; 
 }
 
 .form-group input[type="date"]:focus { 
-    color: #333333 !important; 
+    color: var(--home-form-input-text, #333333) !important; 
     background: rgba(255, 255, 255, 0.3) !important; 
 }
 
@@ -317,8 +322,9 @@
     border: 2px solid #e0e0e0; 
     border-radius: 10px; 
     font-size: 1rem; 
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.5s ease; 
     background: white; 
+    color: var(--home-form-select-text, #333333);
     position: relative; 
     overflow: hidden; 
     word-wrap: break-word; 
@@ -337,10 +343,10 @@
 .city-select:focus,
 .airport-select:focus { 
     outline: none; 
-    border-color: #667eea; 
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); 
+    border-color: #6eafff; 
+    box-shadow: 0 0 0 3px rgba(110, 175, 255, 0.1); 
     transform: translateY(-2px); 
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2); 
+    box-shadow: 0 8px 25px rgba(110, 175, 255, 0.2); 
 }
 
 .city-select:disabled { 
@@ -356,16 +362,20 @@
 }
 
  
-.city-select option { 
+.city-select option,
+.country-select option,
+.airport-select option { 
     padding: 10px; 
     font-size: 0.9rem; 
     white-space: normal; 
     word-wrap: break-word; 
     max-width: 100%; 
+    background: var(--home-form-option-bg, #ffffff); 
+    color: var(--home-form-option-text, #333333);
 }
 
 .city-select option:checked { 
-    background: #667eea; 
+    background: #6eafff; 
     color: white; 
 }
 
@@ -390,7 +400,7 @@
 
 .search-button { 
     width: 30%; 
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%); 
     color: white; 
     border: none; 
     border-radius: 20px ; 
@@ -405,21 +415,37 @@
 
 .search-button:hover { 
     transform: translateY(-2px); 
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); 
+    box-shadow: 0 10px 30px rgba(110, 175, 255, 0.3); 
 }
 
  
 .features { 
     padding: 4rem 0; 
     background: 
-        linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%), 
-        url('/images/fraport_tav_antalya_airport_cover.jpg'); 
+        linear-gradient(135deg, rgba(110, 175, 255, 0.05) 0%, rgba(20, 83, 201, 0.05) 100%); 
     background-size: cover; 
     background-position: center; 
     background-attachment: fixed; 
     position: relative; 
-    backdrop-filter: blur(20px); 
+    backdrop-filter: blur(20px);
 }
+
+.features::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--bg-current-image);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    z-index: -1;
+    transition: background-image 1s ease-in-out;
+    pointer-events: none;
+}
+
 
 
 .features .container { 
@@ -437,10 +463,11 @@
     text-align: center; 
     font-size: 2.8rem; 
     margin-bottom: 60px; 
-    color: #ffffff; 
+    color: var(--home-section-title, #ffffff); 
     font-weight: 700; 
     text-shadow: 0 3px 6px rgba(0,0,0,0.6); 
     letter-spacing: -0.5px; 
+    transition: color 0.5s ease;
 }
 
 .features-grid { 
@@ -491,15 +518,17 @@
 .feature-card h3 { 
     font-size: 1.4rem; 
     margin-bottom: 15px; 
-    color: #ffffff; 
+    color: var(--home-feature-title, #ffffff); 
     font-weight: 600; 
     text-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+    transition: color 0.5s ease;
 }
 
 .feature-card p { 
-    color: #f0f0f0; 
+    color: var(--home-feature-text, #f0f0f0); 
     line-height: 1.6; 
     text-shadow: 0 1px 2px rgba(0,0,0,0.2); 
+    transition: color 0.5s ease;
 }
 
  
@@ -520,7 +549,7 @@
 
 .btn-primary { 
     background: white; 
-    color: #667eea; 
+    color: #6eafff; 
     border: 2px solid white; 
 }
 
@@ -538,7 +567,7 @@
 
 .btn-secondary:hover { 
     background: white; 
-    color: #667eea; 
+    color: #6eafff; 
     transform: translateY(-2px); 
 }
 

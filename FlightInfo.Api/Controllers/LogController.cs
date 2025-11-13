@@ -1,11 +1,13 @@
 using FlightInfo.Application.Interfaces.Services;
 using FlightInfo.Shared.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightInfo.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // Tüm endpoint'ler için yetkilendirme gerekli
     public class LogController : ControllerBase
     {
         private readonly ILogService _logService;
@@ -40,6 +42,22 @@ namespace FlightInfo.Api.Controllers
                 return NotFound();
 
             return NoContent();
+        }
+
+        // DELETE: api/log/clear - Tüm logları temizle
+        [HttpDelete("clear")]
+        [Authorize(Roles = "Admin")] // Sadece Admin kullanıcılar tüm logları silebilir
+        public async Task<IActionResult> ClearAllLogs()
+        {
+            try
+            {
+                int deletedCount = await _logService.ClearAllLogsAsync();
+                return Ok(new { message = "Tüm loglar başarıyla temizlendi", deletedCount = deletedCount });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Loglar temizlenirken bir hata oluştu", error = ex.Message });
+            }
         }
 
         // POST: api/log/test

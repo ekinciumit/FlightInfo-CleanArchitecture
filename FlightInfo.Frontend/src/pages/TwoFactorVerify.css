@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%);
   padding: 20px;
 }
 
@@ -26,7 +26,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  background: linear-gradient(90deg, #ffffff, #6eafff, #1453c9);
 }
 
 .verify-header {
@@ -91,9 +91,9 @@
 
 .code-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #6eafff;
   background: white;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 4px rgba(110, 175, 255, 0.1);
   transform: scale(1.02);
 }
 
@@ -113,9 +113,9 @@
 }
 
 .code-dot.filled {
-  background: #667eea;
+  background: #6eafff;
   transform: scale(1.2);
-  box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 8px rgba(110, 175, 255, 0.3);
 }
 
 .timer {
@@ -186,7 +186,7 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #6eafff 50%, #1453c9 100%);
   color: white;
   border: none;
   padding: 16px 32px;
@@ -217,7 +217,7 @@
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 12px 24px rgba(110, 175, 255, 0.4);
 }
 
 .btn-primary:disabled {
@@ -228,8 +228,8 @@
 
 .btn-secondary {
   background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  color: #6eafff;
+  border: 2px solid #6eafff;
   padding: 14px 32px;
   border-radius: 12px;
   font-size: 16px;
@@ -240,10 +240,10 @@
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #667eea;
+  background: #6eafff;
   color: white;
   transform: translateY(-1px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 8px 16px rgba(110, 175, 255, 0.2);
 }
 
 .btn-secondary:disabled {
@@ -268,7 +268,7 @@
 }
 
 .btn-link:hover {
-  color: #667eea;
+  color: #6eafff;
   background: #f7fafc;
 }
 

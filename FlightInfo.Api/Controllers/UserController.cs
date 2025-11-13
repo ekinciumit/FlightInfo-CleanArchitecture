@@ -62,6 +62,18 @@ namespace FlightInfo.Api.Controllers
             return Ok(updated);
         }
 
+        // PUT: api/User/{id}/toggle-status → kullanıcı aktif/pasif durumunu değiştir (Admin)
+        [HttpPut("{id}/toggle-status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ToggleUserStatus(int id, [FromBody] ToggleUserStatusRequest request)
+        {
+            var success = await _userService.ToggleUserStatusAsync(id, request.IsActive);
+            if (!success)
+                return NotFound();
+
+            return Ok(new { message = "Kullanıcı durumu başarıyla güncellendi." });
+        }
+
         // DELETE: api/User/{id} → sadece Admin
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
@@ -73,6 +85,12 @@ namespace FlightInfo.Api.Controllers
 
             return NoContent();
         }
+    }
+
+    // Request DTO for toggle status
+    public class ToggleUserStatusRequest
+    {
+        public bool IsActive { get; set; }
     }
 }
 
